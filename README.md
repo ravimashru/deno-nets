@@ -17,11 +17,11 @@ Plan: work on this during the upcoming [Deno Hacktoberfest](https://organize.mlh
 - [ ] Advanced metrics (e.g. F1 score)
 
 ## Potential Interface
-``
-const net = new Network(input_dimensions=5, output_dimensions=1, hidden_layers=[5, 6])
-net.train(X, y)
+```typescript
+const net = new Network(input_dimensions=5, output_dimensions=1, hidden_layers=[5, 6])  
+net.train(X, y)   
 net.predict(X)
-``
+```
 
 ## Reference
 - http://neuralnetworksanddeeplearning.com/
