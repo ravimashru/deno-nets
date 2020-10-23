@@ -19,7 +19,12 @@ Plan: work on this during the upcoming [Deno Hacktoberfest](https://organize.mlh
 ## Potential Interface
 ```typescript
 const net = new Network(input_dimensions=5, output_dimensions=1, hidden_layers=[5, 6])  
+
+# X has 2 dimensions (batch_size, input_dimensions)
+# y as 2 dimensions (batch_size, output_dimensions)
 net.train(X, y)   
+
+# X has 2 dimensions (batch_size, input_dimensions)
 net.predict(X)
 ```
 
