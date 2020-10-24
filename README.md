@@ -28,5 +28,27 @@ net.train(X, y)
 net.predict(X)
 ```
 
+## Loading MNIST Handwritten Digits data
+This repository contains the [MNIST handritten digits](http://yann.lecun.com/exdb/mnist/) dataset in the `data` directory to train the network on. The dataset is compressed (gzip) and needs to be uncompressed before it can be used.
+
+The `MNISTDataLoader` class can be used as follows to load data in a format that can be used with the neural network directly:
+
+```typescript
+// Create an instance of the loader class
+const loader = new MNISTDataLoader();
+
+// Load the training data
+const [X_train, y_train] = await loader.load_train();
+
+// Load the test data
+const [X_test, y_test] = await loader.load_test();
+```
+
+To check if everything works, run the data loader tests:
+```shell
+$ deno run --allow-read deno-loader-test.ts
+```
+
+
 ## Reference
 - http://neuralnetworksanddeeplearning.com/
