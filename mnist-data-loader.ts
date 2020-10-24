@@ -39,7 +39,7 @@ export class MNISTDataLoader {
 
       for (let y = 0; y < colCount; y++) {
         for (let x = 0; x < rowCount; x++) {
-          pixels.push(images[image * rowCount * 28 + (x + y * 28) + 16]);
+          pixels.push(images[image * rowCount * colCount + (x + y * colCount) + 16]);
         }
       }
 
