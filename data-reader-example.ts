@@ -1,5 +1,6 @@
 import { GzipStream } from "https://deno.land/x/compress@v0.3.3/mod.ts";
 import { Matrix } from 'https://deno.land/x/math@v1.1.0/matrix/matrix.ts';
+import { PNGImage } from 'https://deno.land/x/dpng@0.7.5/mod.ts';
 
 // ------------------------------------
 // Example 1: Uncompressing data
@@ -68,3 +69,26 @@ const X_train = await loadImages('./data/train-images-idx3-ubyte');
 const y_train = await loadLabels('./data/train-labels-idx1-ubyte');
 console.log(X_train.shape);
 console.log(y_train.shape);
+
+
+// ------------------------------------
+// Example 3: Visualize data
+// ------------------------------------
+
+const testSize = 10;
+for (let i = 0; i < testSize; i++) {
+  const png = new PNGImage(28, 28);
+  for (let y = 0; y <= 27; y++) {
+    for (let x = 0; x <= 27; x++) {
+      const color = X_train.row(i)[28 * y + x];
+      const black = png.createRGBColor({
+        r: 255 - color,
+        g: 255 - color,
+        b: 255 - color,
+        a: 1,
+      });
+      png.setPixel(x, y, black);
+    }
+  }
+  Deno.writeFileSync(`./images/${y_train.row(i)[0]}_${i}.png`, png.getBuffer());
+}
