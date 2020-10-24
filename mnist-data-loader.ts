@@ -39,6 +39,8 @@ export class MNISTDataLoader {
 
       for (let y = 0; y < colCount; y++) {
         for (let x = 0; x < rowCount; x++) {
+          // Offset by 16 because first 16 bytes are used for magic number + data size
+          // See description of file format on http://yann.lecun.com/exdb/mnist/ for more details
           pixels.push(images[image * rowCount * colCount + (x + y * colCount) + 16]);
         }
       }
