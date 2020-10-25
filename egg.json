@@ -1,11 +1,13 @@
-
 {
-  "name": "countries",
-  "description": "🦕 module which provides information about countries on earth + mars",
-  "homepage": "https://github.com/michael-spengler/countries",
+  "name": "neural_nets",
+  "description": "Create, train and use neural networks using Typescript in Deno",
+  "homepage": "https://github.com/ravimashru/deno-nets",
+  "version": "0.0.1",
+  "stable": false,
   "files": [
     "./**/*.ts",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "entry": "./mod.ts"
 }
