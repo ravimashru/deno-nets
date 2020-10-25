@@ -6,10 +6,27 @@ import { Matrix } from 'https://deno.land/x/math/mod.ts';
 
 const createRandomRealMatrix = (dim1: number, dim2: number): Matrix => {
   const res: number[][] = [];
+  const randomNumbers = [];
   for (let i = 0; i < dim1; i++) {
     const inner = [];
     for (let j = 0; j < dim2; j++) {
-      inner.push(Math.random());
+      const randomNumber = Math.random();
+      randomNumbers.push(randomNumber);
+      inner.push(randomNumber);
+    }
+    res.push(inner);
+  }
+  const sum = randomNumbers.reduce((a, b) => a + b, 0);
+  const avg = sum / randomNumbers.length;
+  return (new Matrix(res)).div(avg);
+};
+
+const createZerosMatrix = (dim1: number, dim2: number): Matrix => {
+  const res: number[][] = [];
+  for (let i = 0; i < dim1; i++) {
+    const inner = [];
+    for (let j = 0; j < dim2; j++) {
+      inner.push(0);
     }
     res.push(inner);
   }
@@ -42,9 +59,25 @@ const operateOnMatrix = (matrix: Matrix, fn: Function): Matrix => {
 const printShapes = (arr: Matrix[]): void => {
   arr.forEach((mat: Matrix) => {
     const [rows, cols] = mat.shape;
-    console.log(`${rows} X ${cols}`)
+    console.log(`${rows} X ${cols}`);
   });
-}
+};
+
+const addMatrixArrays = (arr1: Matrix[], arr2: Matrix[]): Matrix[] => {
+  if (arr1.length !== arr2.length) {
+    throw new Error(
+      `Arrays have different lengths: ${arr1.length} and ${arr2.length}!`
+    );
+  }
+
+  const res: Matrix[] = [];
+
+  for (let i = 0; i < arr1.length; i++) {
+    res.push(arr1[i].plus(arr2[i]));
+  }
+
+  return res;
+};
 
 class Network {
   private layer_sizes: number[] = [];
@@ -186,13 +219,12 @@ class Network {
       z = zVectors[i];
       const zSigmoidPrime = operateOnMatrix(z, sigmoidPrime);
 
-      db = this.weights[i+1].transpose().times(db).times(zSigmoidPrime);
+      db = this.weights[i + 1].transpose().times(db).times(zSigmoidPrime);
       grad_b.unshift(db);
 
-      const dw = db.times(activations[i])
+      const dw = db.times(activations[i]);
       grad_w.unshift(dw);
     }
-
 
     // console.log('grad w shapes');
     // printShapes(grad_w);
@@ -202,14 +234,80 @@ class Network {
 
     return [grad_w, grad_b];
   }
+
+  public update_mini_batch(X: Matrix, y: Matrix, lr: number): void {
+    let weightUpdates: Matrix[] = [];
+    let biasUpdates: Matrix[] = [];
+
+    for (let i = 0; i < this.weights.length; i++) {
+      weightUpdates.push(createZerosMatrix(...this.weights[i].shape));
+      biasUpdates.push(createZerosMatrix(...this.biases[i].shape));
+    }
+
+    for (let i = 0; i < X.matrix.length; i++) {
+      const inputs = X.row(i);
+      const outputs = y.row(i);
+
+      const [dw, db] = this.backprop(
+        new Matrix([inputs]),
+        new Matrix([outputs])
+      );
+
+      weightUpdates = addMatrixArrays(weightUpdates, dw);
+      biasUpdates = addMatrixArrays(biasUpdates, db);
+    }
+
+    // Update weights
+    for (let i = 0; i < this.weights.length; i++) {
+      const currentWeights = this.weights[i];
+      const deltaWeights = weightUpdates[i];
+
+      this.weights[i] = currentWeights.minus(
+        deltaWeights.times(lr / X.matrix.length)
+      );
+    }
+
+    // Update biases
+    for (let i = 0; i < this.biases.length; i++) {
+      const currentBiases = this.biases[i];
+      const deltaBiases = biasUpdates[i];
+
+      this.biases[i] = currentBiases.minus(
+        deltaBiases.times(lr / X.matrix.length)
+      );
+    }
+  }
 }
 
-const net = new Network([2, 3, 4, 5, 2]);
+const net = new Network([2, 5, 2]);
 
-const [dw, db] = net.backprop(new Matrix([[2, 3]]), new Matrix([[1, 0]]));
+const X_train = new Matrix([
+  [0, 0],
+  [0, 1],
+  [1, 0],
+  [1, 1],
+]);
 
-console.log('dW shapes');
-printShapes(dw);
+const y_train = new Matrix([
+  [0, 0],
+  [0, 1],
+  [0, 1],
+  [1, 1]
+]);
 
-console.log('db shapes');
-printShapes(db);
+const printResults = () => {
+  for (let i = 0; i < X_train.matrix.length; i++) {
+    const input = X_train.row(i);
+    const result = net.feedforward(input);
+    console.log(`Inputs: ${input}\tOutput: ${result}`);
+  }
+}
+
+for (let epoch = 0; epoch <= 100000; epoch++) {
+  net.update_mini_batch(X_train, y_train, 1);
+  if (epoch % 25000 === 0) {
+    console.log(`Epoch ${epoch}:`)
+    printResults();
+    console.log();
+  }
+}
