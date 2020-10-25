@@ -66,7 +66,7 @@ export class Network {
     return res.transpose().matrix;
   }
 
-  public train(X_train: Matrix, y_train: Matrix, epochs: number, lr: number) {
+  public train(X_train: Matrix, y_train: Matrix, epochs: number, lr: number, verbose = false) {
     for (let epoch = 0; epoch < epochs; epoch++) {
       // Shuffle X_train, y_train after every epoch
       const ArrayX_Y = shuffle(X_train, y_train);
@@ -78,7 +78,7 @@ export class Network {
         const miniBatchY = miniBatchesY[index]
         this.update_mini_batch(miniBatchX, miniBatchY, lr)
       }
-      if (epoch % 25000 === 0) {
+      if (verbose && epoch % 25000 === 0) {
         console.log(`Epoch ${epoch}:`)
         printResults(X_train, this)
         console.log()
