@@ -113,56 +113,18 @@ export class Network {
       const weights = this.weights[i];
       const biases = this.biases[i];
 
-      // console.log('------');
-      // console.log(activation);
-      // console.log(weights);
-      // console.log(biases);
-
       z = weights.times(activation.transpose()).plus(biases);
       zVectors.push(z);
       activation = operateOnMatrix(z, sigmoid).transpose();
       activations.push(activation);
     }
 
-    // console.log('<<<<>>>>><<<<<>>>><<<>>>');
-    // console.log('activations', activations);
-    // console.log('y', y);
-    // console.log('z', zVectors);
-
-    // (1x2) - (1x2) [dot] (2 X 1)
-    // Need: 1 x 2
-
-    // console.log(activation);
-    // console.log();
-    // console.log(y);
-    // console.log();
-    // console.log(activation.minus(y));
-    // console.log();
-    // console.log(activation.minus(y).transpose());
-    // console.log();
-    // console.log(activation.minus(y).transpose().times(z));
-    // console.log();
-    // console.log(z);
-
     let db = activation
       .minus(y)
       .transpose()
       .times(operateOnMatrix(z, sigmoidPrime));
-    // console.log('partial derivative', db);
 
     grad_b.unshift(db);
-
-    // console.log('z shapes');
-    // printShapes(zVectors);
-
-    // console.log('Activation shapes');
-    // printShapes(activations);
-
-    // console.log('Weight shapes');
-    // printShapes(this.weights);
-
-    // console.log('Bias shapes');
-    // printShapes(this.biases);
 
     const partialDerivativeWeights = db.times(
       activations[activations.length - 2]
@@ -180,12 +142,6 @@ export class Network {
       const dw = db.times(activations[i]);
       grad_w.unshift(dw);
     }
-
-    // console.log('grad w shapes');
-    // printShapes(grad_w);
-
-    // console.log('grad b shapes');
-    // printShapes(grad_b);
 
     return [grad_w, grad_b];
   }
