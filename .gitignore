@@ -7,3 +7,5 @@ t10k-labels-idx1-ubyte
 
 .vscode/
 images/
+
+eggs-debug.log
