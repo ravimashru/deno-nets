@@ -87,16 +87,16 @@ export class Network {
     }
   }
 
-  public backprop(x: Matrix, y: Matrix) {
-    if (x.shape[1] !== this.layer_sizes[0]) {
+  public backprop(x: Matrix, y: Matrix, layer_sizes: number[], weightMatrix: Matrix[], biasMatrix: Matrix[]) {
+    if (x.shape[1] !== layer_sizes[0]) {
       throw new Error(
-        `Input should have ${this.layer_sizes[0]} features, ${x.shape[1]} features passed!`
+        `Input should have ${layer_sizes[0]} features, ${x.shape[1]} features passed!`
       );
     }
-    if (y.shape[1] !== this.layer_sizes[this.layer_sizes.length - 1]) {
+    if (y.shape[1] !== layer_sizes[layer_sizes.length - 1]) {
       throw new Error(
         `Output should have ${
-          this.layer_sizes[this.layer_sizes.length - 1]
+          layer_sizes[layer_sizes.length - 1]
         } labels, ${y.shape[1]} features passed!`
       );
     }
@@ -109,9 +109,9 @@ export class Network {
     const activations = [x];
     const zVectors = [];
 
-    for (let i = 0; i < this.weights.length; i++) {
-      const weights = this.weights[i];
-      const biases = this.biases[i];
+    for (let i = 0; i < weightMatrix.length; i++) {
+      const weights = weightMatrix[i];
+      const biases = biasMatrix[i];
 
       z = weights.times(activation.transpose()).plus(biases);
       zVectors.push(z);
@@ -132,11 +132,11 @@ export class Network {
 
     grad_w.unshift(partialDerivativeWeights);
 
-    for (let i = this.weights.length - 2; i >= 0; i--) {
+    for (let i = weightMatrix.length - 2; i >= 0; i--) {
       z = zVectors[i];
       const zSigmoidPrime = operateOnMatrix(z, sigmoidPrime);
 
-      db = this.weights[i + 1].transpose().times(db).times(zSigmoidPrime);
+      db = weightMatrix[i + 1].transpose().times(db).times(zSigmoidPrime);
       grad_b.unshift(db);
 
       const dw = db.times(activations[i]);
@@ -161,7 +161,10 @@ export class Network {
 
       const [dw, db] = this.backprop(
         new Matrix([inputs]),
-        new Matrix([outputs])
+        new Matrix([outputs]),
+        this.layer_sizes,
+        this.weights,
+        this.biases
       );
 
       weightUpdates = addMatrixArrays(weightUpdates, dw);
