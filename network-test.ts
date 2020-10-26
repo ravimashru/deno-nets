@@ -1,7 +1,7 @@
 import { Matrix } from 'https://deno.land/x/math/mod.ts';
 import { Network } from './network.ts';
 
-const net = new Network([2, 5, 2]);
+const net = new Network([2, 5, 3]);
 
 const X_train = new Matrix([
   [0, 0],
@@ -11,10 +11,10 @@ const X_train = new Matrix([
 ]);
 
 const y_train = new Matrix([
-  [0, 0],
-  [0, 1],
-  [0, 1],
-  [1, 1]
+  [-1, -1, -1],
+  [-1, 1, 1],
+  [-1, 1, 1],
+  [1, 1, -1]
 ]);
 
-net.train(X_train, y_train, 100000, 1, true)
+net.train(X_train, y_train, 100001, 1, true)
