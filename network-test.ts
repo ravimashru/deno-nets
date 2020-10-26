@@ -59,4 +59,4 @@ const y_train = new Matrix([
 // }
 
 // train(X_train, y_train, epochs, learningRate)
-net.train(X_train, y_train, 100000, 1);
+net.train(X_train, y_train, 100000, 1)
