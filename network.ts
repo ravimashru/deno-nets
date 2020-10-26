@@ -5,9 +5,9 @@
 import { Matrix } from 'https://deno.land/x/math/mod.ts';
 import {
   createRandomRealMatrix,
+  createZerosMatrix,
   sigmoid,
   sigmoidPrime,
-  createZerosMatrix,
   operateOnMatrix,
   addMatrixArrays,
   shuffle,
@@ -19,8 +19,6 @@ export class Network {
   private layer_sizes: number[] = [];
   private biases: Matrix[] = [];
   private weights: Matrix[] = [];
-  private batch_size = 10;
-  private workers:Worker[]=[];
 
   constructor(layer_sizes: number[]) {
     if (layer_sizes.length < 3) {
@@ -36,10 +34,6 @@ export class Network {
 
       this.weights[i - 1] = createRandomRealMatrix(dim1, dim2);
       this.biases[i - 1] = createRandomRealMatrix(dim1, 1);
-    }
-
-    for(let i=0;i<this.batch_size;i++){
-      this.workers.push(new Worker(new URL("worker.ts", import.meta.url).href, { type: "module" }));
     }
   }
 
@@ -72,19 +66,18 @@ export class Network {
     return res.transpose().matrix;
   }
 
-  public async train(X_train: Matrix, y_train: Matrix, epochs: number, lr: number, verbose = false) {
+  public train(X_train: Matrix, y_train: Matrix, epochs: number, lr: number, verbose = false) {
     for (let epoch = 0; epoch < epochs; epoch++) {
       // Shuffle X_train, y_train after every epoch
       const ArrayX_Y = shuffle(X_train, y_train);
-      let miniBatchesX = createMiniBatches(ArrayX_Y[0], this.batch_size);
-      let miniBatchesY = createMiniBatches(ArrayX_Y[1], this.batch_size);
+      let miniBatchesX = createMiniBatches(ArrayX_Y[0], 10);
+      let miniBatchesY = createMiniBatches(ArrayX_Y[1], 10);
       
       for (let index = 0; index < miniBatchesX.length; index++) {
         const miniBatchX = miniBatchesX[index];
         const miniBatchY = miniBatchesY[index]
-        await this.update_mini_batch(miniBatchX, miniBatchY, lr)
+        this.update_mini_batch(miniBatchX, miniBatchY, lr)
       }
-      console.log(`Epoch ${epoch}:`)
       if (verbose && epoch % 25000 === 0) {
         console.log(`Epoch ${epoch}:`)
         printResults(X_train, this)
@@ -153,7 +146,7 @@ export class Network {
     return [grad_w, grad_b];
   }
 
-  public async update_mini_batch(X: Matrix, y: Matrix, lr: number) {
+  public update_mini_batch(X: Matrix, y: Matrix, lr: number): void {
     let weightUpdates: Matrix[] = [];
     let biasUpdates: Matrix[] = [];
 
@@ -162,26 +155,22 @@ export class Network {
       biasUpdates.push(createZerosMatrix(...this.biases[i].shape));
     }
 
-    var promises = [];
-
     for (let i = 0; i < X.matrix.length; i++) {
       const inputs = X.row(i);
       const outputs = y.row(i);
-      promises.push(this.createWorker(
+
+      const [dw, db] = this.backprop(
         new Matrix([inputs]),
         new Matrix([outputs]),
         this.layer_sizes,
         this.weights,
-        this.biases,
-        this.workers[i]
-      ));
+        this.biases
+      );
+
+      weightUpdates = addMatrixArrays(weightUpdates, dw);
+      biasUpdates = addMatrixArrays(biasUpdates, db);
     }
 
-    const data:any = await Promise.all(promises);
-    for(let i=0;i<data.length;i++){
-      weightUpdates = addMatrixArrays(weightUpdates, this.castToMatrix(data[i].dw));
-      biasUpdates = addMatrixArrays(biasUpdates, this.castToMatrix(data[i].db));
-    }
     // Update weights
     for (let i = 0; i < this.weights.length; i++) {
       const currentWeights = this.weights[i];
@@ -201,25 +190,5 @@ export class Network {
         deltaBiases.times(lr / X.matrix.length)
       );
     }
-
-  }
-
-  private createWorker(x:Matrix, y:Matrix, layer_sizes:Number[], weights:Matrix[], biases:Matrix[], worker:Worker){
-    return new Promise((resolve)=> {
-      worker.postMessage({x:x, y:y, layer_sizes:layer_sizes, weightMatrix:weights, biasMatrix:biases});
-      worker.onmessage = function(event){
-          resolve(event.data);
-      };
-    });
-  }
-
-  private castToMatrix(array:any) {
-    let result:Matrix[] = [];
-
-    for(let i=0;i<array.length; i++){
-      result.push(new Matrix(array[i].matrix));
-    }
-    
-    return result;
   }
 }
