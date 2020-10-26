@@ -38,6 +38,14 @@ export const sigmoidPrime = (value: number): number => {
     return sigmoid(value) * (1 - sigmoid(value));
 };
   
+export const tanh = (value: number): number => {
+  return Math.tanh(value);
+};
+
+export const tanhPrime = (value: number): number => {
+  return 1 - (Math.tanh(value) * Math.tanh(value));
+};
+  
 export const operateOnMatrix = (matrix: Matrix, fn: Function): Matrix => {
     const [rows, cols] = matrix.shape;
     const res = [];
