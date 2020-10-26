@@ -1,4 +1,4 @@
-import { Matrix } from 'https://deno.land/x/math/mod.ts';
+import { Matrix } from 'https://deno.land/x/math@v1.1.0/mod.ts';
 import { Network } from './network.ts';
 import { shuffle, createMiniBatches } from './utility.ts';
 
@@ -59,4 +59,4 @@ const y_train = new Matrix([
 // }
 
 // train(X_train, y_train, epochs, learningRate)
-net.train(X_train, y_train, 50, 1)
+net.train(X_train, y_train, 100000, 1, true);

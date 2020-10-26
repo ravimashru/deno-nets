@@ -1,4 +1,4 @@
-import { Matrix } from 'https://deno.land/x/math@v1.1.0/matrix/matrix.ts';
+import { Matrix } from 'https://deno.land/x/math@v1.1.0/matrix.ts';
 import { MNISTDataLoader } from './mnist-data-loader.ts';
 
 const pass = (message: string): void => {

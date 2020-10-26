@@ -19,7 +19,7 @@ self.onmessage = async (e) => {
     let result = {dw:dw, db:db};
 
     postMessage(result);
-    self.close();
+
 };
 
 
