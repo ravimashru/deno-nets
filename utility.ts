@@ -2,20 +2,25 @@ import { Matrix } from 'https://deno.land/x/math/mod.ts';
 import { Network } from './network.ts';
 
 export const createRandomRealMatrix = (dim1: number, dim2: number): Matrix => {
-    const res: number[][] = [];
-    const randomNumbers = [];
-    for (let i = 0; i < dim1; i++) {
-      const inner = [];
-      for (let j = 0; j < dim2; j++) {
-        const randomNumber = Math.random();
-        randomNumbers.push(randomNumber);
-        inner.push(randomNumber);
-      }
-      res.push(inner);
-    }
-    const sum = randomNumbers.reduce((a, b) => a + b, 0);
-    const avg = sum / randomNumbers.length;
-    return (new Matrix(res)).div(avg);
+  const randomNumbers = [];
+
+  for (let i = 0; i < dim1 * dim2; i++) {
+    randomNumbers.push(Math.random());
+  }
+  
+  const sum = randomNumbers.reduce((a, b) => a + b, 0);
+  const avg = sum / randomNumbers.length;
+  const variance =
+    randomNumbers
+      .map((num) => num - avg) // Difference from mean
+      .map((num) => num * num) // Squared
+      .reduce((a, b) => a + b, 0) / randomNumbers.length; // Average
+  
+  const stddev = Math.sqrt(variance);
+  
+  const normalizedRandomNumbers = randomNumbers.map(num => (num - avg) / stddev);
+  
+  return new Matrix([normalizedRandomNumbers]).reshape([dim1, dim2]);
 };
   
 export const createZerosMatrix = (dim1: number, dim2: number): Matrix => {
@@ -37,7 +42,7 @@ export const sigmoid = (value: number): number => {
 export const sigmoidPrime = (value: number): number => {
     return sigmoid(value) * (1 - sigmoid(value));
 };
-  
+
 export const tanh = (value: number): number => {
   return Math.tanh(value);
 };
