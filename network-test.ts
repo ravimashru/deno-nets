@@ -14,7 +14,7 @@ const y_train = new Matrix([
   [-1, -1, -1],
   [-1, 1, 1],
   [-1, 1, 1],
-  [1, 1, -1]
+  [1, 1, -1],
 ]);
 
-net.train(X_train, y_train, 100001, 1, true)
+net.train(X_train, y_train, 100001, 1);

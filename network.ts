@@ -14,6 +14,7 @@ import {
   tanh,
   tanhPrime,
 } from './utility.ts';
+import ProgressBar from 'https://deno.land/x/progress@v1.1.4/mod.ts';
 
 export class Network {
   private layer_sizes: number[] = [];
@@ -67,6 +68,12 @@ export class Network {
   }
 
   public train(X_train: Matrix, y_train: Matrix, epochs: number, lr: number, verbose = false) {
+
+    const progress = new ProgressBar({
+      total: epochs,
+      display: 'Epoch - :completed/:total :time :bar :percent'
+    });
+
     for (let epoch = 0; epoch < epochs; epoch++) {
       // Shuffle X_train, y_train after every epoch
       const ArrayX_Y = shuffle(X_train, y_train);
@@ -83,7 +90,7 @@ export class Network {
         printResults(X_train, this)
         console.log()
       }
-      
+      progress.render(epoch + 1);
     }
   }
 
