@@ -6,13 +6,13 @@ import { Matrix } from 'https://deno.land/x/math/mod.ts';
 import {
   createRandomRealMatrix,
   createZerosMatrix,
-  sigmoid,
-  sigmoidPrime,
   operateOnMatrix,
   addMatrixArrays,
   shuffle,
   createMiniBatches,
   printResults,
+  tanh,
+  tanhPrime,
 } from './utility.ts';
 
 export class Network {
@@ -58,7 +58,7 @@ export class Network {
 
       for (let j = 0; j < rowSize; j++) {
         for (let k = 0; k < colSize; k++) {
-          res.matrix[j][k] = sigmoid(res.matrix[j][k]);
+          res.matrix[j][k] = tanh(res.matrix[j][k]);
         }
       }
     }
@@ -115,14 +115,14 @@ export class Network {
 
       z = weights.times(activation.transpose()).plus(biases);
       zVectors.push(z);
-      activation = operateOnMatrix(z, sigmoid).transpose();
+      activation = operateOnMatrix(z, tanh).transpose();
       activations.push(activation);
     }
 
     let db = activation
       .minus(y)
       .transpose()
-      .times(operateOnMatrix(z, sigmoidPrime));
+      .times(operateOnMatrix(z, tanhPrime));
 
     grad_b.unshift(db);
 
@@ -134,9 +134,9 @@ export class Network {
 
     for (let i = weightMatrix.length - 2; i >= 0; i--) {
       z = zVectors[i];
-      const zSigmoidPrime = operateOnMatrix(z, sigmoidPrime);
+      const zTanhPrime = operateOnMatrix(z, tanhPrime);
 
-      db = weightMatrix[i + 1].transpose().times(db).times(zSigmoidPrime);
+      db = weightMatrix[i + 1].transpose().times(db).times(zTanhPrime);
       grad_b.unshift(db);
 
       const dw = db.times(activations[i]);
