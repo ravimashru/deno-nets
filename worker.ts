@@ -1,3 +1,12 @@
+/**
+ * Webworker implementation for parallelization of the neural net
+ * backprop method. Parallel processing of matrices will improve performance.
+ * Not included in the current implementation as the deno webworker implementation
+ * is still not reliable enough.
+ * External types are stripped while being passed to the webwork, hence explicit casts are needed.
+ */
+
+
 import { Matrix } from 'https://deno.land/x/math@v1.1.0/mod.ts';
 import { Network } from './network.ts';
 
