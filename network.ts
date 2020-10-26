@@ -5,9 +5,9 @@
 import { Matrix } from 'https://deno.land/x/math/mod.ts';
 import {
   createRandomRealMatrix,
-  createZerosMatrix,
   sigmoid,
   sigmoidPrime,
+  createZerosMatrix,
   operateOnMatrix,
   addMatrixArrays,
   shuffle,
@@ -78,7 +78,7 @@ export class Network {
         const miniBatchY = miniBatchesY[index]
         this.update_mini_batch(miniBatchX, miniBatchY, lr)
       }
-      if (verbose && epoch % 25000 === 0) {
+      if (verbose && epoch % 5 === 0) {
         console.log(`Epoch ${epoch}:`)
         printResults(X_train, this)
         console.log()
@@ -146,7 +146,7 @@ export class Network {
     return [grad_w, grad_b];
   }
 
-  public update_mini_batch(X: Matrix, y: Matrix, lr: number): void {
+  public async update_mini_batch(X: Matrix, y: Matrix, lr: number) {
     let weightUpdates: Matrix[] = [];
     let biasUpdates: Matrix[] = [];
 
@@ -155,22 +155,27 @@ export class Network {
       biasUpdates.push(createZerosMatrix(...this.biases[i].shape));
     }
 
+    var promises = [];
+
     for (let i = 0; i < X.matrix.length; i++) {
       const inputs = X.row(i);
       const outputs = y.row(i);
 
-      const [dw, db] = this.backprop(
+      promises.push(this.createWorker(
         new Matrix([inputs]),
         new Matrix([outputs]),
         this.layer_sizes,
         this.weights,
         this.biases
-      );
-
-      weightUpdates = addMatrixArrays(weightUpdates, dw);
-      biasUpdates = addMatrixArrays(biasUpdates, db);
+      ));
     }
 
+    const data:any = await Promise.all(promises);
+ 
+    for(let i=0;i<data.length;i++){
+      weightUpdates = addMatrixArrays(weightUpdates, this.castToMatrix(data[i].dw));
+      biasUpdates = addMatrixArrays(biasUpdates, this.castToMatrix(data[i].db));
+    }
     // Update weights
     for (let i = 0; i < this.weights.length; i++) {
       const currentWeights = this.weights[i];
@@ -190,5 +195,26 @@ export class Network {
         deltaBiases.times(lr / X.matrix.length)
       );
     }
+
+  }
+
+  private createWorker(x:Matrix, y:Matrix, layer_sizes:Number[], weights:Matrix[], biases:Matrix[]){
+    return new Promise(function(resolve) {
+      var worker = new Worker(new URL("worker.ts", import.meta.url).href, { type: "module" });
+      worker.postMessage({x:x, y:y, layer_sizes:layer_sizes, weightMatrix:weights, biasMatrix:biases});
+      worker.onmessage = function(event){
+          resolve(event.data);
+      };
+    });
+  }
+
+  private castToMatrix(array:any) {
+    let result:Matrix[] = [];
+
+    for(let i=0;i<array.length; i++){
+      result.push(new Matrix(array[i].matrix));
+    }
+    
+    return result;
   }
 }
