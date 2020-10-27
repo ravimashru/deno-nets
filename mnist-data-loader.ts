@@ -2,13 +2,13 @@ import { Matrix } from 'https://deno.land/x/math@v1.1.0/matrix/matrix.ts';
 
 export class MNISTDataLoader {
   public async load_train(): Promise<[Matrix, Matrix]> {
-    const X_train = await this.loadImages('./data/train-images-idx3-ubyte.gz');
-    const y_train = await this.loadLabels('./data/train-labels-idx1-ubyte.gz');
+    const X_train = await this.loadImages('./data/train-images-idx3-ubyte');
+    const y_train = await this.loadLabels('./data/train-labels-idx1-ubyte');
     return [X_train, y_train];
   }
   public async load_test(): Promise<[Matrix, Matrix]> {
-    const X_test = await this.loadImages('./data/t10k-images-idx3-ubyte.gz');
-    const y_test = await this.loadLabels('./data/t10k-labels-idx1-ubyte.gz');
+    const X_test = await this.loadImages('./data/t10k-images-idx3-ubyte');
+    const y_test = await this.loadLabels('./data/t10k-labels-idx1-ubyte');
     return [X_test, y_test];
   }
 
