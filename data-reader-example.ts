@@ -1,4 +1,4 @@
-import { GzipStream } from "https://deno.land/x/compress@v0.3.3/mod.ts";
+import { GzipStream } from 'https://deno.land/x/compress@v0.3.3/mod.ts';
 import { Matrix } from 'https://deno.land/x/math@v1.1.0/matrix/matrix.ts';
 import { PNGImage } from 'https://deno.land/x/dpng@0.7.5/mod.ts';
 
