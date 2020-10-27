@@ -145,8 +145,8 @@ export const onehotencoder = (y_labels: Matrix): Matrix => {
   for (let i = 0; i < mat_shape[0]; i = i + 1) {
     for (let j = 0; j < mat_shape[1]; j = j + 1) {
       let val = y_labels.pointAt(i, j)
-      for (let k = 0; k < max; k = k + 1) {
-        if (k + 1 == val) {
+      for (let k = 0; k <=max; k = k + 1) {
+        if (k == val) {
           arr.push(1)
         } else {
           arr.push(0)
