@@ -85,9 +85,8 @@ export class Network {
         const miniBatchY = miniBatchesY[index]
         this.update_mini_batch(miniBatchX, miniBatchY, lr)
       }
-      if (verbose && epoch % 25000 === 0) {
+      if (verbose) {
         console.log(`Epoch ${epoch}:`)
-        printResults(X_train, this)
         console.log()
       }
       progress.render(epoch + 1);
