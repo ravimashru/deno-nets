@@ -34,7 +34,7 @@ export class Network {
       const dim2 = layer_sizes[i - 1];
 
       this.weights[i - 1] = createRandomRealMatrix(dim1, dim2);
-      this.biases[i - 1] = createRandomRealMatrix(dim1, 1);
+      this.biases[i - 1] = createZerosMatrix(dim1, 1);
     }
   }
 
