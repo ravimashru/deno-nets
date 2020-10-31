@@ -198,4 +198,28 @@ export class Network {
 
     return [grad_w, grad_b];
   }
+
+  public async save(filename: string) {
+    const data = {
+      shape: this.layer_sizes,
+      weights: this.weights,
+      biases: this.biases
+    };
+
+    const encoder = new TextEncoder();
+    const contents = encoder.encode(JSON.stringify(data));
+    await Deno.writeFileSync(filename, contents);
+  }
+
+  public static async restore(filename: string) {
+    const data = await Deno.readTextFileSync(filename);
+    const jsonData = JSON.parse(data);
+
+    const network = new Network(jsonData.shape);
+
+    network.weights = jsonData.weights.map((e: any) => new Matrix(e.matrix));
+    network.biases = jsonData.biases.map((e: any) => new Matrix(e.matrix));
+
+    return network;
+  }
 }
