@@ -94,6 +94,52 @@ export class Network {
     }
   }
 
+  public update_mini_batch(X: Matrix, y: Matrix, lr: number): void {
+    let weightUpdates: Matrix[] = [];
+    let biasUpdates: Matrix[] = [];
+
+    for (let i = 0; i < this.weights.length; i++) {
+      weightUpdates.push(createZerosMatrix(...this.weights[i].shape));
+      biasUpdates.push(createZerosMatrix(...this.biases[i].shape));
+    }
+
+    for (let i = 0; i < X.matrix.length; i++) {
+      const inputs = X.row(i);
+      const outputs = y.row(i);
+
+      const [dw, db] = this.backprop(
+        new Matrix([inputs]),
+        new Matrix([outputs]),
+        this.layer_sizes,
+        this.weights,
+        this.biases
+      );
+
+      weightUpdates = addMatrixArrays(weightUpdates, dw);
+      biasUpdates = addMatrixArrays(biasUpdates, db);
+    }
+
+    // Update weights
+    for (let i = 0; i < this.weights.length; i++) {
+      const currentWeights = this.weights[i];
+      const deltaWeights = weightUpdates[i];
+
+      this.weights[i] = currentWeights.minus(
+        deltaWeights.times(lr / X.matrix.length)
+      );
+    }
+
+    // Update biases
+    for (let i = 0; i < this.biases.length; i++) {
+      const currentBiases = this.biases[i];
+      const deltaBiases = biasUpdates[i];
+
+      this.biases[i] = currentBiases.minus(
+        deltaBiases.times(lr / X.matrix.length)
+      );
+    }
+  }
+
   public backprop(x: Matrix, y: Matrix, layer_sizes: number[], weightMatrix: Matrix[], biasMatrix: Matrix[]) {
     if (x.shape[1] !== layer_sizes[0]) {
       throw new Error(
@@ -151,51 +197,5 @@ export class Network {
     }
 
     return [grad_w, grad_b];
-  }
-
-  public update_mini_batch(X: Matrix, y: Matrix, lr: number): void {
-    let weightUpdates: Matrix[] = [];
-    let biasUpdates: Matrix[] = [];
-
-    for (let i = 0; i < this.weights.length; i++) {
-      weightUpdates.push(createZerosMatrix(...this.weights[i].shape));
-      biasUpdates.push(createZerosMatrix(...this.biases[i].shape));
-    }
-
-    for (let i = 0; i < X.matrix.length; i++) {
-      const inputs = X.row(i);
-      const outputs = y.row(i);
-
-      const [dw, db] = this.backprop(
-        new Matrix([inputs]),
-        new Matrix([outputs]),
-        this.layer_sizes,
-        this.weights,
-        this.biases
-      );
-
-      weightUpdates = addMatrixArrays(weightUpdates, dw);
-      biasUpdates = addMatrixArrays(biasUpdates, db);
-    }
-
-    // Update weights
-    for (let i = 0; i < this.weights.length; i++) {
-      const currentWeights = this.weights[i];
-      const deltaWeights = weightUpdates[i];
-
-      this.weights[i] = currentWeights.minus(
-        deltaWeights.times(lr / X.matrix.length)
-      );
-    }
-
-    // Update biases
-    for (let i = 0; i < this.biases.length; i++) {
-      const currentBiases = this.biases[i];
-      const deltaBiases = biasUpdates[i];
-
-      this.biases[i] = currentBiases.minus(
-        deltaBiases.times(lr / X.matrix.length)
-      );
-    }
   }
 }
