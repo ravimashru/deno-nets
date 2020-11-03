@@ -130,33 +130,20 @@ export const printResults = (X_train: Matrix, net: Network) => {
   }
 }
 
-export const onehotencoder = (y_labels: Matrix): Matrix => {
-  const mat_shape = y_labels.shape;
-  let max = y_labels.pointAt(0, 0)
-  for (let row = 0; row < mat_shape[0]; row = row + 1) {
-    for (let column = 0; column < mat_shape[1]; column = column + 1) {
-      if (y_labels.pointAt(row, column) > max) {
-        max = y_labels.pointAt(row, column)
-      }
-    }
-  };
-  var arr: number[] = [];
-  var super_arr: number[][] = [];
-  for (let i = 0; i < mat_shape[0]; i = i + 1) {
-    for (let j = 0; j < mat_shape[1]; j = j + 1) {
-      let val = y_labels.pointAt(i, j)
-      for (let k = 0; k <=max; k = k + 1) {
-        if (k == val) {
-          arr.push(1)
-        } else {
-          arr.push(0)
-        }
-      }
-      super_arr.push(arr)
-      arr = [];
-    }
+export const onehotencoder = (labels: Matrix): Matrix => {
+  if (labels.shape[1] !== 1) {
+    throw new Error('Only single label columns can be encoded!');
   }
-  const mymat = new Matrix(super_arr)
-  // console.log(mymat)
-  return mymat
+
+  // Assumption: labels matrix has only one column
+  const labelsArray = labels.transpose().row(0);
+  const minLabel = Math.min(...labelsArray);
+  const maxLabel = Math.max(...labelsArray);
+  
+  const oheMatrix = createZerosMatrix(labels.shape[0], maxLabel - minLabel + 1);
+  for (let i = 0; i < labels.shape[0]; i++) {
+    const label = labelsArray[i];
+    oheMatrix.matrix[i][label - minLabel] = 1;
+  }
+  return oheMatrix;
 }
