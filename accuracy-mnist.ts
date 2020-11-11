@@ -22,7 +22,7 @@ console.info('Check accuracy predictions...');
 const predictions = [];
 for (let i = 0; i < X_train.shape[0]; i++) {
   const res = net.feedforward(X_train.row(i));
-  predictions.push(res);
+  predictions.push(res[0]);
 }
 
 
