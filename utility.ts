@@ -51,6 +51,10 @@ export const tanhPrime = (value: number): number => {
   return 1 - (Math.tanh(value) * Math.tanh(value));
 };
 
+export const relu = (value: number): number => {
+  return value > 0 ? value : 0;
+}
+
 export const operateOnMatrix = (matrix: Matrix, fn: Function): Matrix => {
   const [rows, cols] = matrix.shape;
   const res = [];
