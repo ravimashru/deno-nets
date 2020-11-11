@@ -83,10 +83,10 @@ export class Network {
 
       const batchSize = 64;
 
-    const progress = new ProgressBar({
+      const progress = new ProgressBar({
         total: Math.round(X_train.shape[0] / batchSize),
         display: ':completed/:total :time :bar :percent'
-    });
+      });
 
       // Shuffle X_train, y_train after every epoch
       const ArrayX_Y = shuffle(X_train, y_train);
