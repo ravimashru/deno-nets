@@ -75,28 +75,30 @@ export class Network {
 
   public train(X_train: Matrix, y_train: Matrix, epochs: number, lr: number, verbose = false) {
 
+    for (let epoch = 0; epoch < epochs; epoch++) {
+
+      if (verbose) {
+        console.log(`Epoch ${epoch + 1}:`);
+      }
+
+      const batchSize = 64;
+
     const progress = new ProgressBar({
-      total: epochs,
-      display: 'Epoch - :completed/:total :time :bar :percent'
+        total: Math.round(X_train.shape[0] / batchSize),
+        display: ':completed/:total :time :bar :percent'
     });
 
-    for (let epoch = 0; epoch < epochs; epoch++) {
       // Shuffle X_train, y_train after every epoch
       const ArrayX_Y = shuffle(X_train, y_train);
-      let miniBatchesX = createMiniBatches(ArrayX_Y[0], 10);
-      let miniBatchesY = createMiniBatches(ArrayX_Y[1], 10);
+      let miniBatchesX = createMiniBatches(ArrayX_Y[0], batchSize);
+      let miniBatchesY = createMiniBatches(ArrayX_Y[1], batchSize);
       
       for (let index = 0; index < miniBatchesX.length; index++) {
         const miniBatchX = miniBatchesX[index];
         const miniBatchY = miniBatchesY[index]
         this.update_mini_batch(miniBatchX, miniBatchY, lr)
+        progress.render(index + 1);
       }
-      if (verbose) {
-        console.log(`Epoch ${epoch}:`)
-        // printResults(X_train, this)
-        console.log()
-      }
-      progress.render(epoch + 1);
     }
   }
 
