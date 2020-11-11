@@ -24,7 +24,7 @@ export class Network {
   private biases: Matrix[] = [];
   private weights: Matrix[] = [];
 
-  private activation = sigmoid;
+  private activation = relu;
   private activationPrime = sigmoidPrime;
 
   constructor(layer_sizes: number[]) {

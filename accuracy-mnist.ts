@@ -16,7 +16,7 @@ console.info('Encoding labels...');
 const y_train_encoded = onehotencoder(y_train);
 
 // const net = new Network([784, 30, 10]);
-const net = await Network.restore('mnist.network');
+const net = await Network.restore('sample-mnist-fc.json');
 
 console.info('Check accuracy predictions...');
 const predictions = [];
