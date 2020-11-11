@@ -13,6 +13,9 @@ import {
   printResults,
   tanh,
   tanhPrime,
+  sigmoid,
+  sigmoidPrime,
+  relu
 } from './utility.ts';
 import ProgressBar from 'https://deno.land/x/progress@v1.1.4/mod.ts';
 
@@ -20,6 +23,9 @@ export class Network {
   private layer_sizes: number[] = [];
   private biases: Matrix[] = [];
   private weights: Matrix[] = [];
+
+  private activation = sigmoid;
+  private activationPrime = sigmoidPrime;
 
   constructor(layer_sizes: number[]) {
     if (layer_sizes.length < 3) {
@@ -59,7 +65,7 @@ export class Network {
 
       for (let j = 0; j < rowSize; j++) {
         for (let k = 0; k < colSize; k++) {
-          res.matrix[j][k] = tanh(res.matrix[j][k]);
+          res.matrix[j][k] = this.activation(res.matrix[j][k]);
         }
       }
     }
@@ -168,14 +174,14 @@ export class Network {
 
       z = weights.times(activation.transpose()).plus(biases);
       zVectors.push(z);
-      activation = operateOnMatrix(z, tanh).transpose();
+      activation = operateOnMatrix(z, this.activation).transpose();
       activations.push(activation);
     }
 
     let db = activation
       .minus(y)
       .transpose()
-      .times(operateOnMatrix(z, tanhPrime));
+      .times(operateOnMatrix(z, this.activationPrime));
 
     grad_b.unshift(db);
 
@@ -187,7 +193,7 @@ export class Network {
 
     for (let i = weightMatrix.length - 2; i >= 0; i--) {
       z = zVectors[i];
-      const zTanhPrime = operateOnMatrix(z, tanhPrime);
+      const zTanhPrime = operateOnMatrix(z, this.activationPrime);
 
       db = weightMatrix[i + 1].transpose().times(db).times(zTanhPrime);
       grad_b.unshift(db);
