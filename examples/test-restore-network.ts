@@ -4,11 +4,11 @@
  * Inputs: 1,0	Output: -0.9774049102089323
  * Inputs: 0,0	Output: -0.9998650077535737
  */
-import { Matrix } from "https://deno.land/x/math@v1.1.0/matrix/matrix.ts";
-import { Network } from "./network.ts";
-import { printResults } from "./utility.ts";
+import { Matrix } from 'https://deno.land/x/math@v1.1.0/matrix/matrix.ts';
+import { Network, printResults } from '../mod.ts';
 
-const network = await Network.restore("and-gate.network");
+// Use `network-test-logic-gates.ts` to train and save network
+const network = await Network.restore('and-gate.network');
 
 const X_train = new Matrix([
   [0, 0],

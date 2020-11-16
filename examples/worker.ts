@@ -8,7 +8,7 @@
 
 
 import { Matrix } from 'https://deno.land/x/math@v1.1.0/mod.ts';
-import { Network } from './network.ts';
+import { Network } from '../mod.ts';
 
 self.onmessage = async (e) => {
     let x :Matrix = new Matrix(e.data.x.matrix);

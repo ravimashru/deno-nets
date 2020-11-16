@@ -24,8 +24,8 @@ export class Network {
   private biases: Matrix[] = [];
   private weights: Matrix[] = [];
 
-  private activation = relu;
-  private activationPrime = sigmoidPrime;
+  private activation = tanh;
+  private activationPrime = tanhPrime;
 
   constructor(layer_sizes: number[]) {
     if (layer_sizes.length < 3) {
@@ -81,11 +81,11 @@ export class Network {
         console.log(`Epoch ${epoch + 1}:`);
       }
 
-      const batchSize = 64;
+      const batchSize = Math.min(64, X_train.shape[0]);
 
       const progress = new ProgressBar({
         total: Math.round(X_train.shape[0] / batchSize),
-        display: ':completed/:total :time :bar :percent'
+        display: `Epoch ${epoch+1}: :completed/:total :time :bar :percent`
       });
 
       // Shuffle X_train, y_train after every epoch
