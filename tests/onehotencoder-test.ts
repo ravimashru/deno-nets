@@ -1,6 +1,6 @@
 import { Matrix } from 'https://deno.land/x/math@v1.1.0/matrix/matrix.ts';
-import { onehotencoder } from './utility.ts';
 import { assertEquals } from 'https://deno.land/std/testing/asserts.ts';
+import { onehotencoder } from '../mod.ts';
 
 const testMatrix1 = new Matrix([[6], [1], [2], [3], [4], [5]]);
 
@@ -22,7 +22,7 @@ const checkMatrixEquality = (mat1: Matrix, mat2: Matrix) => {
       assertEquals(mat1.pointAt(i, j), mat2.pointAt(i, j));
     }
   }
-}
+};
 
 Deno.test({
   name: 'Check encoded values',
@@ -43,5 +43,5 @@ Deno.test({
       console.log(`Expected:\n${expectedMatrix}`);
       throw e;
     }
-  }
+  },
 });

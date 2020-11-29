@@ -1,2 +1,6 @@
-export * from './mnist-data-loader.ts'
-export * from './data-loader-test.ts'
+export { Network } from './src/network.ts';
+
+export { accuracy } from './src/metrics.ts';
+export { onehotencoder, printResults } from './src/utility.ts'
+
+export { MNISTDataLoader } from './src/mnist-data-loader.ts';

@@ -1,5 +1,5 @@
 import { Matrix } from 'https://deno.land/x/math@v1.1.0/matrix/matrix.ts';
-import { MNISTDataLoader } from './mnist-data-loader.ts';
+import { MNISTDataLoader } from '../mod.ts';
 
 const pass = (message: string): void => {
   console.log(`✅ ${message}`);
