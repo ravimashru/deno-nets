@@ -44,11 +44,13 @@ export class Network {
       this.biases[i - 1] = createZerosMatrix(dim1, 1);
     }
 
-    if (activationFunctionHiddenLayers === undefined) {
+    if (activationFunctionHiddenLayers  === undefined || activationFunctionPrimeHiddenLayers === undefined) {
+      console.log("using standard activation function")
       this.activation = tanh
       this.activationPrime = tanhPrime
       this.activationFunctionOutputLayer = tanh
     } else {
+      console.log("using customized activation function")
       this.activation = activationFunctionHiddenLayers
       this.activationPrime = activationFunctionPrimeHiddenLayers
       this.activationFunctionOutputLayer = activationFunctionOutputLayer
@@ -76,6 +78,7 @@ export class Network {
 
       for (let j = 0; j < rowSize; j++) {
         for (let k = 0; k < colSize; k++) {
+          console.log(res.matrix[j][k])
           res.matrix[j][k] = this.activation(res.matrix[j][k]);
         }
       }

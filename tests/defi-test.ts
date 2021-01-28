@@ -3,7 +3,8 @@ import { assertEquals } from 'https://deno.land/std@0.76.0/testing/asserts.ts';
 import { accuracy } from '../mod.ts';
 import { defiTestData } from './defi-test-data.ts'
 
-import { Network } from '../src/classifier-network.ts';
+import { Network } from '../src/network.ts';
+import { relu, reluPrime } from '../src/utility.ts';
 
 
 for (const entry of defiTestData) {
@@ -39,7 +40,7 @@ const numberOfNeuronsInHiddenLayer2 = 80 // automatically play around with this
 const epochs = 75 // stop after 1000 epochs to save cpu - this shall be automated in the context with the 80 / 20 HyperParamter optimization issue
 const learningRate = 1// depends on scale of features
 
-const net = new Network([numberOfInputLayers, numberOfNeuronsInHiddenLayer1, numberOfNeuronsInHiddenLayer2, numberOfOutputLayers]);
+const net = new Network([numberOfInputLayers, numberOfNeuronsInHiddenLayer1, numberOfNeuronsInHiddenLayer2, numberOfOutputLayers], relu, reluPrime);
 
 await net.train(featuresTrainingData, labelsTrainingData, epochs, learningRate)
 
