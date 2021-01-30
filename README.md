@@ -8,6 +8,7 @@ Plan: work on this during the upcoming [Deno Hacktoberfest](https://organize.mlh
 ## MVP
 - [ ] Dense Layers
 - [ ] SGD optimizer
+- [ ] Ability to define activation functions (in hidden layers and output layer)
 - [ ] Basic metrics (e.g. RMSE for regression, accuracy for classification)
 - [ ] A network that achieves decent test accuracy on [MNIST handwritten digits](http://yann.lecun.com/exdb/mnist/)
 
