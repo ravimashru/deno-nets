@@ -1,4 +1,5 @@
 import { Matrix } from 'https://deno.land/x/math@v1.1.0/mod.ts';
+// import { Network } from 'https://deno.land/x/deno_nets/network.ts';
 import { Network } from './network.ts';
 
 export const createRandomRealMatrix = (dim1: number, dim2: number): Matrix => {
@@ -52,7 +53,12 @@ export const tanhPrime = (value: number): number => {
 };
 
 export const relu = (value: number): number => {
-  return value > 0 ? value : 0;
+  return value > 0 ? value : 0.00002;
+}
+
+export const reluPrime = (value: number): number => {
+  // return value > 0 ? value : 0;
+  return (value > 0) ? 1 : 0.00002;
 }
 
 export const operateOnMatrix = (matrix: Matrix, fn: Function): Matrix => {

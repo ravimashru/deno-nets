@@ -24,10 +24,11 @@ export class Network {
   private biases: Matrix[] = [];
   private weights: Matrix[] = [];
 
-  private activation = tanh;
-  private activationPrime = tanhPrime;
+  private activation
+  private activationPrime
+  private activationFunctionOutputLayer
 
-  constructor(layer_sizes: number[]) {
+  constructor(layer_sizes: number[], activationFunctionHiddenLayers?: Function, activationFunctionPrimeHiddenLayers?: Function, activationFunctionOutputLayer?: Function) {
     if (layer_sizes.length < 3) {
       throw new Error(`Please create a network with at least 3 layers!`);
     }
@@ -41,6 +42,18 @@ export class Network {
 
       this.weights[i - 1] = createRandomRealMatrix(dim1, dim2);
       this.biases[i - 1] = createZerosMatrix(dim1, 1);
+    }
+
+    if (activationFunctionHiddenLayers  === undefined || activationFunctionPrimeHiddenLayers === undefined) {
+      console.log("using standard activation function")
+      this.activation = tanh
+      this.activationPrime = tanhPrime
+      this.activationFunctionOutputLayer = tanh
+    } else {
+      console.log("using customized activation function")
+      this.activation = activationFunctionHiddenLayers
+      this.activationPrime = activationFunctionPrimeHiddenLayers
+      this.activationFunctionOutputLayer = activationFunctionOutputLayer
     }
   }
 
@@ -65,6 +78,7 @@ export class Network {
 
       for (let j = 0; j < rowSize; j++) {
         for (let k = 0; k < colSize; k++) {
+          console.log(res.matrix[j][k])
           res.matrix[j][k] = this.activation(res.matrix[j][k]);
         }
       }
@@ -85,14 +99,14 @@ export class Network {
 
       const progress = new ProgressBar({
         total: Math.round(X_train.shape[0] / batchSize),
-        display: `Epoch ${epoch+1}: :completed/:total :time :bar :percent`
+        display: `Epoch ${epoch + 1}: :completed/:total :time :bar :percent`
       });
 
       // Shuffle X_train, y_train after every epoch
       const ArrayX_Y = shuffle(X_train, y_train);
       let miniBatchesX = createMiniBatches(ArrayX_Y[0], batchSize);
       let miniBatchesY = createMiniBatches(ArrayX_Y[1], batchSize);
-      
+
       for (let index = 0; index < miniBatchesX.length; index++) {
         const miniBatchX = miniBatchesX[index];
         const miniBatchY = miniBatchesY[index]
@@ -156,8 +170,7 @@ export class Network {
     }
     if (y.shape[1] !== layer_sizes[layer_sizes.length - 1]) {
       throw new Error(
-        `Output should have ${
-          layer_sizes[layer_sizes.length - 1]
+        `Output should have ${layer_sizes[layer_sizes.length - 1]
         } labels, ${y.shape[1]} features passed!`
       );
     }
